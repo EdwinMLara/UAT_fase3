@@ -8,7 +8,8 @@ var bandera = false;
 var dps = [];
 var inicio=0;
 var chart;
-var id,con = 0;
+var id = null;
+var con = 0;
 window.onload = function () {
 chart = new CanvasJS.Chart("chartContainer", {
         title :{
@@ -29,19 +30,20 @@ chart = new CanvasJS.Chart("chartContainer", {
 
 function updateChart(){
     var incremento = 10;
-    for (var i=inicio;i<inicio+incremento;i++){            
+    fin = inicio + incremento;
+    for (var i=inicio;i<fin;i++){            
         dps.push({
                 x: i,
                 y: dps_socket[i]
         });
     }
-    fin = inicio + incremento;
+    
     if(dps.length > 50){
         dps.splice(0, 10);
     }
-    if(dps.length === dps_socket.length){
+    if(fin === dps_socket.length){
         clearInterval(id);
-    }           
+    }          
     chart.render();
     inicio = inicio + incremento;
 };

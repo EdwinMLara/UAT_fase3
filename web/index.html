@@ -69,11 +69,12 @@ and open the template in the editor.
             
             function probar(){
                 var test = [];
-                for (var i=0;i<10;i++){
-                    test.push(Math.sin(i*0.7));
+                for (var i=0;i<500;i++){
+                    test.push(9*Math.sin(i*0.07));
                 }
                 bandera=true;
-                websocket_celda.send("[1,2,3,4,5,6,7,8,9,10]");
+                //websocket_celda.send("[1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10]");
+                websocket_celda.send(test.toString());
             }
         </script>
     </body>   
