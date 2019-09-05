@@ -6,24 +6,31 @@
 package sockets;
 
 
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import javax.websocket.Session;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import static sockets.Websocket_celda.users;
 
 
 /**
  *
- * @author emlar
+ * @author emlar    
  */
 public class propiedades_socket {
+    public static Set<Session> users;
     public static List<String> list;
     public static String datos;
     
-    public static String path = "C:\\Users\\emlar\\OneDrive\\Documentos\\NetBeansProjects\\Uat_Motor\\web\\texto\\";
+    public static String path = "web\\texto\\";
     
-    public propiedades_socket(List<String> list){
+    public propiedades_socket(List<String> list,Set<Session> users){
         propiedades_socket.list = list;
+        propiedades_socket.users = users;
     }
     
     public static void agregar_datos_lista(String onmessage) throws JSONException{
@@ -40,5 +47,12 @@ public class propiedades_socket {
         path_aux = path.concat(nombre_sensor);
         ef.Escrbir(datos, path_aux.concat(".txt"));
         list.clear();
+    }
+    
+     public static void send_Message(String onmessage) throws IOException{
+        Iterator<Session> interator = users.iterator();
+        while(interator.hasNext()){
+            interator.next().getBasicRemote().sendText(onmessage);
+        }
     }
 }

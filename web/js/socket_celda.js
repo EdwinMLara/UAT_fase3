@@ -9,14 +9,17 @@ var dps = [];
 var inicio=0;
 var chart;
 var id = null;
-var con = 0;
+var con = 0,fin_datos;
+
 window.onload = function () {
 chart = new CanvasJS.Chart("chartContainer", {
         title :{
                 text: ""
         },
         axisY: {
-                includeZero: false
+                includeZero: true,
+                minimum:-10,
+                maximun:10
         },      
         data: [{
                 type: "line",
@@ -31,6 +34,7 @@ chart = new CanvasJS.Chart("chartContainer", {
 function updateChart(){
     var incremento = 10;
     fin = inicio + incremento;
+    console.log(fin);
     for (var i=inicio;i<fin;i++){            
         dps.push({
                 x: i,
@@ -38,15 +42,26 @@ function updateChart(){
         });
     }
     
-    if(dps.length > 50){
-        dps.splice(0, 10);
+    if(dps.length > 100){
+        dps.splice(0, incremento);
     }
     if(fin === dps_socket.length){
         clearInterval(id);
+        alert("Termino");
     }          
     chart.render();
     inicio = inicio + incremento;
 };
+
+var aux;
+function updateChart2(){
+    dps.push({
+                x: con,
+                y: aux
+        });
+    console.log(con,aux);
+    chart.render();
+}
 
 function prueba(){
     console.log(con);
@@ -64,6 +79,7 @@ websocket_celda.onmessage = function Mensaje_celda(message2){
     if(msj2.indexOf(":")>=0){
         bandera = true;
         inicio = 0;
+        fin_datos = 50*parseInt(10*2);
         console.log("Iniciar");
     }
     if(msj2.indexOf("Fin")>=0){
@@ -79,10 +95,26 @@ websocket_celda.onmessage = function Mensaje_celda(message2){
         for(var i=0;i<array.length;i++){
             dps_socket.push(parseFloat(array[i]));
         }
+        console.log("socket vector",dps_socket.length);
         if(bandera===true){
             bandera = false;
-            id = setInterval(updateChart,100); 
+            id = setInterval(updateChart,120); 
         }
     }
 };
+
+function tiemporeal(){
+     var msj2 = message2.data;
+    
+    if(msj2.indexOf(":")>=0){
+        bandera = true;
+        con = 0;
+        console.log(message2.data);
+    }else{
+        var array = msj2.split(",");
+        con++;
+        aux = parseFloat(array[1]);
+        updateChart2();
+    }
+}
 

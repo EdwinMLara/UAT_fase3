@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 import javax.websocket.Session;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -25,11 +23,11 @@ import org.json.JSONException;
  */
 @ServerEndpoint("/WebsocketCelda")
 public class Websocket_celda extends propiedades_socket{
-    public static Set<Session> users = Collections.synchronizedSet(new HashSet<Session>());
     
     public Websocket_celda(){
-        super(new ArrayList<>());
+        super(new ArrayList<>(),Collections.synchronizedSet(new HashSet<Session>()));
     }
+    
     @OnOpen
     public void onOpen(Session user){
         users.add(user);
@@ -59,11 +57,6 @@ public class Websocket_celda extends propiedades_socket{
         t.setStackTrace(stackTrace);
     }
     
-    public static void send_Message(String onmessage) throws IOException{
-        Iterator<Session> interator = users.iterator();
-        while(interator.hasNext()){
-            interator.next().getBasicRemote().sendText(onmessage);
-        }
-    }
+   
  
 }
