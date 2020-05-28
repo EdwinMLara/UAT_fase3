@@ -27,7 +27,7 @@ and open the template in the editor.
                     <div id="chartContainer"></div>
                 </div>
                 <div class="col-sm-4 formulario">
-                    <form>
+                    <form autocomplete="off">
                         <div class="form-group">
                             <label> Tiempo de Prueba</label>
                             <input class="form-control" id="tiempo" value="10">
@@ -35,6 +35,7 @@ and open the template in the editor.
                         <input type="button" class="btn btn-default" href="javascript:void(0);" onclick="enviarMensaje();" value="Iniciar"/>
                         <input type="button" class="btn btn-default" href="javascript:void(0);" onclick="enviarstop();" value="Parar"/>
                         <input type="button" class="btn btn-default" href="javascript:void(0);" onclick="probar();" value="Probar"/>
+                        <input type="button" class="btn btn-default" href="javascript:void(0);" onclick="fin();" value="Fin"/>
                     </form>
                 </div>
             </div>
@@ -51,6 +52,7 @@ and open the template in the editor.
             </div>
         </div>
         <script src="js/socket_celda.js"></script>
+        <script src="js/socket_encoder.js"></script>
         <script>
             var mensaje = document.getElementById('tiempo');    
             function enviarMensaje(){
@@ -75,6 +77,10 @@ and open the template in the editor.
                 }
                 bandera=true;
                 websocket_celda.send(test.toString());
+            }
+            
+            function fin(){
+                websocket_celda.send("Fin");
             }
         </script>
     </body>   

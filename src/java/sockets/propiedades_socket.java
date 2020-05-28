@@ -6,10 +6,13 @@
 package sockets;
 
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import javax.servlet.ServletContext;
 import javax.websocket.Session;
 
 import org.json.JSONArray;
@@ -22,15 +25,11 @@ import static sockets.Websocket_celda.users;
  * @author emlar    
  */
 public class propiedades_socket {
-    public static Set<Session> users;
     public static List<String> list;
     public static String datos;
     
-    public static String path = "web\\texto\\";
-    
-    public propiedades_socket(List<String> list,Set<Session> users){
+    public propiedades_socket(List<String> list){
         propiedades_socket.list = list;
-        propiedades_socket.users = users;
     }
     
     public static void agregar_datos_lista(String onmessage) throws JSONException{
@@ -44,15 +43,14 @@ public class propiedades_socket {
         String path_aux;
         Escribir_fichero ef = new Escribir_fichero();
         datos = Datos_listas.Crear_cadena_escritura(nombre_sensor, list);
-        path_aux = path.concat(nombre_sensor);
-        ef.Escrbir(datos, path_aux.concat(".txt"));
+        String prueba = "Guardar esta cadena un chingo de texto";
+        File file = new File(System.getProperty("com.sun.aas.instanceRoot"));
+        path_aux = file.getAbsolutePath();
+        path_aux = path_aux.concat("\\docroot\\text.txt");
+        System.out.println(path_aux);
+        ef.Escrbir(prueba,path_aux );
         list.clear();
     }
     
-     public static void send_Message(String onmessage) throws IOException{
-        Iterator<Session> interator = users.iterator();
-        while(interator.hasNext()){
-            interator.next().getBasicRemote().sendText(onmessage);
-        }
-    }
+    
 }

@@ -6,46 +6,48 @@
 package sockets;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-import javax.websocket.Session;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
+import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import org.json.JSONException;
+import static sockets.propiedades_socket.agregar_datos_lista;
+import static sockets.propiedades_socket.guardar_datos_txt;
 
 /**
  *
  * @author emlar
  */
-@ServerEndpoint("/WebsocketCelda")
-public class Websocket_celda extends propiedades_socket{
+@ServerEndpoint("/WebsocketEncoder")
+public class Websocket_Encoder extends propiedades_socket {
     public static Set<Session> users = Collections.synchronizedSet(new HashSet<Session>());;
-    
-    public Websocket_celda(){
-        super(new ArrayList<>());
+
+    public Websocket_Encoder(List<String> list) {
+        super(list);
     }
     
-    @OnOpen
+     @OnOpen
     public void onOpen(Session user){
         users.add(user);
-        System.out.println("Conected celda: " + user.getId());
+        System.out.println("Conected encoder: " + user.getId());
     }
     
     @OnMessage
     public void onMessage(String onmessage) throws IOException, JSONException{    
-        System.out.println("Celda " + onmessage);
+        System.out.println("Encoder " + onmessage);
         send_Message(onmessage);
         if(Datos_listas.isJSONValid(onmessage)){
             agregar_datos_lista(onmessage);
         }
         if(onmessage.equals("Fin")){
-            guardar_datos_txt("Celda");
+            guardar_datos_txt("Encoder");
         }
     }
      
@@ -66,5 +68,5 @@ public class Websocket_celda extends propiedades_socket{
             interator.next().getBasicRemote().sendText(onmessage);
         }
     }
- 
+    
 }

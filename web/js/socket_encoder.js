@@ -3,7 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
+var rpm = [];
+var bandera = false, timer = true;
+var id_rpm = null;
+var inicio2 = 0;
 var gauge_encoder = new RadialGauge({
     renderTo: 'canvas-id-rpm',
     width: 300,
@@ -46,25 +49,55 @@ var gauge_encoder = new RadialGauge({
     needleCircleInner: false,
     animationDuration: 1500,
     animationRule: "linear"
-}).draw();   
+}).draw();  
 
-websocket_encoder = new WebSocket("ws://localhost:8080/socket_paralelo/WebsocketEncoder");
+function mostrar_rpm(){
+    gauge_encoder.update({     
+        value: parseInt(rpm[inicio2])
+    });
+    inicio2 += 1;
+    if(inicio2 >= rpm.length){
+        clearInterval(id_rpm);
+        timer = false;
+    }
+}
+
+websocket_encoder = new WebSocket("ws://localhost:8080/Uat_Motor/WebsocketEncoder");
 websocket_encoder.onmessage = function Mensaje_encoder(message4){
     var msj = message4.data;
     //console.log("Encoder ".concat(msj));
     if(msj.indexOf(":")>=0){
         console.log("Iniciar");
+        inicio2 = 0;
+        bandera = true;
     }
     if(msj.indexOf("Fin")>=0){
         console.log("Stop");
     }
     if(msj.indexOf(",")>0){
         var str = msj;
+        str = str.substr(1);
+        str = str.slice(0,-1);
         var array = str.split(",");
+        
+        var transmiciones = parseInt(array.length/20);
+        
+        for(var i=0;i<transmiciones;i++){
+            var aux = array.slice(i*transmiciones,(i+1)*transmiciones);
+            var sum = 0;
+            for(var k=0;k<aux.length;k++){
+                sum += aux[k];
+            }
+            sum = sum/aux.length;
+            rpm.push(sum);
+        }
+        
+        if (bandera === true || timer === false){
+            timer = true;
+            bandera = false;
+            id_rpm = setInterval(mostrar_rpm,100);
+        }
         console.log(array[0]);
-        gauge_encoder.update({     
-            value: parseInt(array[1])
-        });
     }
 };
 

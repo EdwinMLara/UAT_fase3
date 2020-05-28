@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 var dps_socket = [];
-var bandera = false;
+var bandera = false,timer = true;
 var dps = [];
 var inicio=0;
 var chart;
@@ -17,9 +17,7 @@ chart = new CanvasJS.Chart("chartContainer", {
                 text: ""
         },
         axisY: {
-                includeZero: true,
-                minimum:-10,
-                maximun:10
+                includeZero: true
         },      
         data: [{
                 type: "line",
@@ -31,8 +29,8 @@ chart = new CanvasJS.Chart("chartContainer", {
 };
 
 
-function updateChart(){
-    var incremento = 10;
+function updateChart(incremento,num_datos_grafico){
+    timer = true;
     fin = inicio + incremento;
     console.log(fin);
     for (var i=inicio;i<fin;i++){            
@@ -42,15 +40,15 @@ function updateChart(){
         });
     }
     
-    if(dps.length > 100){
+    if(dps.length > num_datos_grafico){
         dps.splice(0, incremento);
     }
-    if(fin === dps_socket.length){
+    if(fin === dps_socket.length || fin > dps_socket.length){
         clearInterval(id);
-        alert("Termino");
+        timer = false;
     }          
     chart.render();
-    inicio = inicio + incremento;
+    inicio = fin;
 };
 
 var aux;
@@ -79,11 +77,17 @@ websocket_celda.onmessage = function Mensaje_celda(message2){
     if(msj2.indexOf(":")>=0){
         bandera = true;
         inicio = 0;
-        fin_datos = 50*parseInt(10*2);
+        if(dps.length > 0){
+            dps_socket.length=0;
+            dps.length = 0;
+            chart.render();
+        }
         console.log("Iniciar");
+        console.log("Se empieza a llenar el buffer");
     }
     if(msj2.indexOf("Fin")>=0){
         console.log("Stop");
+        clearInterval(id);
         bandera = false;
     }
     if(msj2.indexOf(",")>0){
@@ -92,13 +96,16 @@ websocket_celda.onmessage = function Mensaje_celda(message2){
         str = str.slice(0,-1);
         
         var array = str.split(",");
+        console.log(array.length);
         for(var i=0;i<array.length;i++){
             dps_socket.push(parseFloat(array[i]));
         }
         console.log("socket vector",dps_socket.length);
-        if(bandera===true){
+        if(bandera===true || timer == false){
+            console.log("se reactivo el buffer");
+            timer = true;
             bandera = false;
-            id = setInterval(updateChart,120); 
+            id = setInterval(updateChart,100,10,400); 
         }
     }
 };
